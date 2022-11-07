@@ -1,0 +1,54 @@
+Name:         donotexist
+Namespace:    default
+Priority:     0
+Node:         kind-control-plane/172.18.0.2
+Start Time:   Mon, 07 Nov 2022 21:13:14 +0000
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:           10.244.0.9
+IPs:
+  IP:  10.244.0.9
+Containers:
+  donotexist:
+    Container ID:  
+    Image:         donotexist
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ErrImagePull
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-dr8jv (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-dr8jv:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  53s                default-scheduler  Successfully assigned default/donotexist to kind-control-plane
+  Normal   Pulling    15s (x3 over 53s)  kubelet            Pulling image "donotexist"
+  Warning  Failed     15s (x3 over 53s)  kubelet            Failed to pull image "donotexist": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/library/donotexist:latest": failed to resolve reference "docker.io/library/donotexist:latest": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+  Warning  Failed     15s (x3 over 53s)  kubelet            Error: ErrImagePull
+  Normal   BackOff    2s (x3 over 52s)   kubelet            Back-off pulling image "donotexist"
+  Warning  Failed     2s (x3 over 52s)   kubelet            Error: ImagePullBackOff
