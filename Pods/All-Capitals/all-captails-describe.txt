@@ -1,0 +1,51 @@
+Name:         all-capitals
+Namespace:    default
+Priority:     0
+Node:         kind-control-plane/172.18.0.2
+Start Time:   Mon, 07 Nov 2022 20:49:51 +0000
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:           10.244.0.7
+IPs:
+  IP:  10.244.0.7
+Containers:
+  capitals:
+    Container ID:  
+    Image:         BUSYBOX
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       InvalidImageName
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-krkhv (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-krkhv:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason         Age                 From               Message
+  ----     ------         ----                ----               -------
+  Normal   Scheduled      15m                 default-scheduler  Successfully assigned default/all-capitals to kind-control-plane
+  Warning  Failed         13m (x12 over 15m)  kubelet            Error: InvalidImageName
+  Warning  InspectFailed  55s (x72 over 15m)  kubelet            Failed to apply default image tag "BUSYBOX": couldn't parse image reference "BUSYBOX": invalid reference format: repository name must be lowercase
