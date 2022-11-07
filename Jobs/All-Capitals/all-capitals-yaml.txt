@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-11-07T21:44:15Z"
+  finalizers:
+  - batch.kubernetes.io/job-tracking
+  generateName: all-capitals-
+  labels:
+    app: sleep
+    controller-uid: 8ea70b46-778a-4f4f-940f-4e30b410a920
+    job-name: all-capitals
+  name: all-capitals-r5plp
+  namespace: default
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: all-capitals
+    uid: 8ea70b46-778a-4f4f-940f-4e30b410a920
+  resourceVersion: "5514"
+  uid: b7b3dab7-7dba-40f6-b203-53c922e0276e
+spec:
+  containers:
+  - command:
+    - sleep
+    - "300"
+    image: BUSYBOX
+    imagePullPolicy: IfNotPresent
+    name: sleep300
+    resources:
+      requests:
+        cpu: 100m
+        memory: 2G
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n48s4
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: kind-control-plane
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-n48s4
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T21:44:15Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T21:44:15Z"
+    message: 'containers with unready status: [sleep300]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T21:44:15Z"
+    message: 'containers with unready status: [sleep300]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T21:44:15Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - image: BUSYBOX
+    imageID: ""
+    lastState: {}
+    name: sleep300
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        message: 'Failed to apply default image tag "BUSYBOX": couldn''t parse image
+          reference "BUSYBOX": invalid reference format: repository name must be lowercase'
+        reason: InvalidImageName
+  hostIP: 172.18.0.2
+  phase: Pending
+  podIP: 10.244.0.10
+  podIPs:
+  - ip: 10.244.0.10
+  qosClass: Burstable
+  startTime: "2022-11-07T21:44:15Z"

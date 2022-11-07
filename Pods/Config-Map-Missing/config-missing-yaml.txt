@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-11-07T22:18:29Z"
+  name: config-missing
+  namespace: default
+  resourceVersion: "8138"
+  uid: 795a4cdd-c14c-4068-8371-588c2a331e76
+spec:
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - env
+    env:
+    - name: SPECIAL_LEVEL_KEY
+      valueFrom:
+        configMapKeyRef:
+          key: special.how
+          name: special-config
+    image: registry.k8s.io/busybox
+    imagePullPolicy: Always
+    name: test-container
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-2b4d9
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: kind-control-plane
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-2b4d9
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T22:18:29Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T22:18:29Z"
+    message: 'containers with unready status: [test-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T22:18:29Z"
+    message: 'containers with unready status: [test-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-11-07T22:18:29Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - image: registry.k8s.io/busybox
+    imageID: ""
+    lastState: {}
+    name: test-container
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        message: configmap "special-config" not found
+        reason: CreateContainerConfigError
+  hostIP: 172.18.0.2
+  phase: Pending
+  podIP: 10.244.0.13
+  podIPs:
+  - ip: 10.244.0.13
+  qosClass: BestEffort
+  startTime: "2022-11-07T22:18:29Z"

@@ -1,19 +1,19 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: all-capitals
+  name: donotexist
 spec:
   completions: 1
   backoffLimit: 1
   template:
     metadata:
       labels:
-        app: sleep
+        app: donotexist
     spec:
       restartPolicy: Never
       containers:
         - name: sleep300
-          image: "BUSYBOX"
+          image: "donotexist"
           command: ["sleep", "300"]
           resources:
             requests:

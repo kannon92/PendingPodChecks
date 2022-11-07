@@ -1,0 +1,40 @@
+Name:         pod-with-pvc
+Namespace:    default
+Priority:     0
+Node:         <none>
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:           
+IPs:          <none>
+Containers:
+  pvc-container:
+    Image:        nginx:latest
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:
+      /pv-mount from pv (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-hflqh (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  pv:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  example-pvc
+    ReadOnly:   false
+  kube-api-access-hflqh:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age    From               Message
+  ----     ------            ----   ----               -------
+  Warning  FailedScheduling  2m35s  default-scheduler  0/1 nodes are available: 1 persistentvolumeclaim "example-pvc" not found. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
