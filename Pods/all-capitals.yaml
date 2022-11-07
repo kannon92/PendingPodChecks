@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: all-capitals
+spec:
+  containers:
+    - command:
+        - sleep
+        - "3600"
+      image: BUSYBOX
+      name: capitals

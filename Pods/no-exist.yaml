@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: donotexist
+spec:
+  containers:
+    - command:
+        - sleep
+        - "3600"
+      image: donotexist
+      name: donotexist
