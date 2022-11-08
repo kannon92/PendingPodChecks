@@ -29,7 +29,7 @@ It would also be worth exploring if certain states can transition to failed as p
   - There is no container statues for this one
   - Status is ContainerCreating
   - Event says "MountVolume.SetUp failed for volume ..."
-  -[MountVolume.SetUp](https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/util/operationexecutor/operation_generator.go#L530)
+  - [MountVolume.SetUp](https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/util/operationexecutor/operation_generator.go#L530)
 - Unable to Schedule (missing Volume)
   - Condition is unable to schedule
   - Fails in scheduling stage.
