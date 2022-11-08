@@ -1,0 +1,1 @@
+kubectl create configmap special-config --from-literal=special.found=very

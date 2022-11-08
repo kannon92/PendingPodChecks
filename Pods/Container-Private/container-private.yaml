@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-container
+spec:
+  containers:
+    - command:
+        - sleep
+        - "3600"
+      image: docker.mcaq.me/codeserver-webdev
+      name: donotexist

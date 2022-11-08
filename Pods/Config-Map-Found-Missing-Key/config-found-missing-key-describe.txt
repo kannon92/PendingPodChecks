@@ -1,0 +1,61 @@
+Name:         config-found-missing-key
+Namespace:    default
+Priority:     0
+Node:         kind-control-plane/172.18.0.2
+Start Time:   Mon, 07 Nov 2022 23:02:52 +0000
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:           10.244.0.14
+IPs:
+  IP:  10.244.0.14
+Containers:
+  test-container:
+    Container ID:  
+    Image:         registry.k8s.io/busybox
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/sh
+      -c
+      env
+    State:          Waiting
+      Reason:       CreateContainerConfigError
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      SPECIAL_LEVEL_KEY:  <set to the key 'special.how' of config map 'special-config'>  Optional: false
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-cmh97 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-cmh97:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  102s                default-scheduler  Successfully assigned default/config-found-missing-key to kind-control-plane
+  Normal   Pulled     102s                kubelet            Successfully pulled image "registry.k8s.io/busybox" in 165.520773ms
+  Normal   Pulled     101s                kubelet            Successfully pulled image "registry.k8s.io/busybox" in 190.275197ms
+  Normal   Pulled     86s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 194.507362ms
+  Normal   Pulled     70s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 157.059095ms
+  Normal   Pulled     59s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 160.870354ms
+  Normal   Pulled     45s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 189.614107ms
+  Normal   Pulled     31s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 144.48577ms
+  Warning  Failed     16s (x8 over 102s)  kubelet            Error: couldn't find key special.how in ConfigMap default/special-config
+  Normal   Pulled     16s                 kubelet            Successfully pulled image "registry.k8s.io/busybox" in 266.791009ms
+  Normal   Pulling    3s (x9 over 102s)   kubelet            Pulling image "registry.k8s.io/busybox"

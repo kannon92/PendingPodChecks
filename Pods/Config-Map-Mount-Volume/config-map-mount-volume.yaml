@@ -1,0 +1,25 @@
+apiVersion: v1
+   
+kind: Pod
+   
+metadata:
+   
+  name: config-map-mount
+   
+spec:
+   
+  containers:
+   
+    - name: test-container
+   
+      image: registry.k8s.io/busybox
+   
+      command: [ "/bin/sh", "-c", "env" ]
+   
+      volumeMounts:
+      - mountPath: /clusters-config
+        name: clusters-config-volume
+  volumes:
+    - configMap:
+        name: clusters-config-file
+      name: clusters-config-volume

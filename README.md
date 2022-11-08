@@ -46,6 +46,23 @@ Example:
   - Get Table
     - Ready=0/1
     - Status=ImagePullBackOff
+- [private-docker-no-crds](./Pods/Container-Private/container-private.yaml)
+  - Reproduction: Container with private image
+  - Pod status:
+    - status: Pending
+  - ContainerStatus:
+    - state=Waiting
+      - message=Back-off pulling image
+      - reason=ImagePullBackOff
+  - Conditions:
+    - Type=Status
+    - Initialized=True
+    - Ready=False
+    - ContainersReady=False
+    - PodScheduled=True
+  - Get Table
+    - Ready=0/1
+    - Status=ImagePullBackOff
 - [config-map-missing](./Pods/Config-Map-Missing/config-map-missing.yaml)
   - Reproduction: Container with missing config map
   - Pod status:
@@ -63,6 +80,24 @@ Example:
   - Get Table
     - Ready=0/1
     - Status=CreateContainerConfigError
+- [config-map-key-missing](./Pods/Config-Map-Found-Missing-Key/config-map-found-missing-key.yaml)
+  - Reproduction: Container with existing config map but invalid key reference
+  - Pod status:
+    - status: Pending
+  - ContainerStatus:
+    - state=Waiting
+      - message=couldn't find key special.how in ConfigMap default/special-config
+      - reason=CreateContainerConfigError
+  - Conditions:
+    - Type=Status
+    - Initialized=True
+    - Ready=False
+    - ContainersReady=False
+    - PodScheduled=True
+  - Get Table
+    - Ready=0/1
+    - Status=CreateContainerConfigError
+
 - [volume-missing](./Pods/Volume-Missing/volume-missing.yaml)
   - Reproduction: Container with missing volume claim
   - This has no container status and it actually fails in the scheduling step.
@@ -80,5 +115,44 @@ Example:
   - Get Table
     - Ready=0/1
     - Status=Pending
+- [volume-missing-secret](./Pods/Volume-Secret-Mount/volume-secret-mount.yaml)
+  - Reproduction: Container with missing secret for volume
+  - Pod status:
+    - status: Pending
+  - ContainerStatus:
+    - state=Waiting
+      - Reason=ContainerCreating
+  - Conditions:
+    - Type=Status
+    - Initialized=True
+    - Ready=False
+    - ContainersReady=False
+    - PodScheduled=True
+  - Get Table
+    - Ready=0/1
+    - Status=ContainerCreating
+  - Events show a message for MountVolume.SetUp
+  - "MountVolume.SetUp failed for volume "secret-volume" : secret "test-secret" not found"
+  - This does not show up as reason or error.
+- [config-map-volume-missing](./Pods/Config-Map-Mount-Volume/config-map-mount-volume.yaml)
+  - Reproduction: Container with missing secret for volume
+  - Pod status:
+    - status: Pending
+  - ContainerStatus:
+    - state=Waiting
+      - Reason=ContainerCreating
+  - Conditions:
+    - Type=Status
+    - Initialized=True
+    - Ready=False
+    - ContainersReady=False
+    - PodScheduled=True
+  - Get Table
+    - Ready=0/1
+    - Status=ContainerCreating
+  - Events show a message for MountVolume.SetUp
+  - MountVolume.SetUp failed for volume "clusters-config-volume" : configmap "clusters-config-file" not found
+  - This does not show up as reason or error.
+
   
 

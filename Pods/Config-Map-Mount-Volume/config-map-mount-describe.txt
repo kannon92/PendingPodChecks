@@ -1,0 +1,56 @@
+Name:         config-map-mount
+Namespace:    default
+Priority:     0
+Node:         kind-control-plane/172.18.0.2
+Start Time:   Tue, 08 Nov 2022 03:25:35 +0000
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:           
+IPs:          <none>
+Containers:
+  test-container:
+    Container ID:  
+    Image:         registry.k8s.io/busybox
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/sh
+      -c
+      env
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /clusters-config from clusters-config-volume (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-t6pfq (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  clusters-config-volume:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      clusters-config-file
+    Optional:  false
+  kube-api-access-t6pfq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason       Age                   From               Message
+  ----     ------       ----                  ----               -------
+  Normal   Scheduled    7m24s                 default-scheduler  Successfully assigned default/config-map-mount to kind-control-plane
+  Warning  FailedMount  72s (x11 over 7m24s)  kubelet            MountVolume.SetUp failed for volume "clusters-config-volume" : configmap "clusters-config-file" not found
+  Warning  FailedMount  50s (x3 over 5m21s)   kubelet            Unable to attach or mount volumes: unmounted volumes=[clusters-config-volume], unattached volumes=[clusters-config-volume kube-api-access-t6pfq]: timed out waiting for the condition
