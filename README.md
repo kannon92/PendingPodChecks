@@ -10,7 +10,7 @@ It would be ideal to have a standard condition/status for these common configura
 
 Example: 
 - [all-capitals](./Pods/All-Capitals/all-capitals.yaml)
-  - Reproduction: Run image with invalid image name (all capitalis)
+  - Reproduction: Run image with invalid image name (all capitals)
   - Pod status:
     - status: Pending
   - ContainerStatus:
