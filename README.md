@@ -1,16 +1,70 @@
-# Conditions and Statues for Pending Pods
+# Conditions and Status for Pending Pods
+
+## Summary
+
+As a batch user, it is very likely that users experience configuration errors when submitting pods to Kubernetes.  Pods are stuck in pending and require either an out-of-tree controller to remove the pod or change the state of the pod to fail.  
+
+We would like to propose a new condition so that out-of-tree controllers can determine if a pod has an error in startup.
 
 ## Motivation
 
 As a batch system developer, we find that higher level controllers have to write code to handle Pending Pod cases.  Since the pods are not considered failed, the higher level controller needs to transition this state to failed in order to enforce retries.  For example, the job controller will run these pods and the state of the Pod will be in Pending.  The job controller does not transition this state to failed even if the pod will never.
 
-In the Armada project, we implement logic that determines retry ability based on events and statues.  Events are not standard so we expect issues when updating.  
+For example, in the Armada project, we implement logic that determines retry ability based on events and statues.  Events are not standard so we expect issues when updating.  
 
 It would be ideal to have a standard condition/status for these common configuration errors.
 
 It would also be worth exploring if certain states can transition to failed as part of kubelet path.
 
+## Goals
+- Add a new condition PodFailedToStartup to detect failures in configuration or setup
+- Use this condition to force failure of Pods in Job Controller (Maybe?)
+
+## Non Goals
+- Will not modify behavior for ImagePullBackOff
+   - This status can be business as usual or image pull errors
+   - Unclear if it is possible to detect this as a failure
+
+## Proposal
+
+Add a PodFailedToStartup Condition for the following cases:
+
+- Invalid Image Name
+- Invalid Config Map
+- Invalid Mounting Volumes from secrets or config-maps
+- Unable to Schedule (missing Volume)
+  - Condition is unable to schedule
+  - Fails in scheduling stage.
+- NEED TO FIND MORE OPTIONS
+
+The following cases are failures and the pod will stay in pending forever.  
+
+## Design Plan
+Add a PodFailedToStartup condition in core/v1:
+
+```
+const (
+  ...
+	// PodInitialized means that all init containers in the pod have started successfully.
+	PodInitialized PodConditionType = "Initialized"
+  ...
+  // PodFailedToStartup means that a pod has a fatal configuration error and is unable to progress to Running
+  PodFailedToStartup PodConditionType = "FailedToStartup"
+)
+```
+
+We will target the pending cases above and set PodFailedToStartup to true.  
+
+- If [image-manager](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/images/image_manager.go#L107) detects that the image is invalid, we should set PodFailedToStartup to true.
+- If Reason is CreateContainerConfigError, then we should set PodFailedToStartup to true.
+
+The more complicated issue is if we have volume issues (MountVolume.Setup) does not set a reason or status, so we will have to research what to do in this case.  
+
+
+
 ## Findings from Examples
+
+See [Examples](#examples) for more details.
 
 - Invalid Image Name
   - Should always fail
@@ -33,6 +87,7 @@ It would also be worth exploring if certain states can transition to failed as p
 - Unable to Schedule (missing Volume)
   - Condition is unable to schedule
   - Fails in scheduling stage.
+
 
 ## Examples
 In this section, we will demonstate how to reproduce certain pending conditions and write out the conditions, status and events if necessary.
