@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-container
+spec:
+  containers:
+    - command:
+        - sleep
+        - "3600"
+      image: hello-world
+      name: donotexist
+      imagePullPolicy: Never

@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-12-03T17:50:53Z"
+  name: private-container
+  namespace: default
+  resourceVersion: "109820"
+  uid: 152a5093-2cd3-47fe-bde3-7bf66ee70488
+spec:
+  containers:
+  - command:
+    - sleep
+    - "3600"
+    image: docker.mcaq.me/codeserver-webdev
+    imagePullPolicy: Never
+    name: donotexist
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6d6fb
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: armada-test-worker
+  preemptionPolicy: PreemptLowerPriority
+  priority: 1000
+  priorityClassName: armada-default
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-6d6fb
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-12-03T17:50:53Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-12-03T17:50:53Z"
+    message: 'containers with unready status: [donotexist]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-12-03T17:50:53Z"
+    message: 'containers with unready status: [donotexist]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-12-03T17:50:53Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - image: docker.mcaq.me/codeserver-webdev
+    imageID: ""
+    lastState: {}
+    name: donotexist
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        message: Container image "docker.mcaq.me/codeserver-webdev" is not present
+          with pull policy of Never
+        reason: ErrImageNeverPull
+  hostIP: 172.18.0.3
+  phase: Pending
+  podIP: 10.244.1.4
+  podIPs:
+  - ip: 10.244.1.4
+  qosClass: BestEffort
+  startTime: "2022-12-03T17:50:53Z"

@@ -8,6 +8,8 @@ We would like to propose a new condition so that out-of-tree controllers can det
 
 ## Motivation
 
+Batch users may not have deep knowledge of Kubernetes.  It is common occurence to find users submitting Pods with configuration errors (invalid images, wrong image names, missing volumes, missing secrets, wrong volume/secret for config map).  These cases cause the Pod to be stuck in pending and there is code required to remove these pods or user input to remove.
+
 As a batch system developer, we find that higher level controllers have to write code to handle Pending Pod cases.  Since the pods are not considered failed, the higher level controller needs to transition this state to failed in order to enforce retries.  For example, the job controller will run these pods and the state of the Pod will be in Pending.  The job controller does not transition this state to failed even if the pod will never.
 
 For example, in the Armada project, we implement logic that determines retry ability based on events and statues.  Events are not standard so we expect issues when updating.  
@@ -18,12 +20,15 @@ It would also be worth exploring if certain states can transition to failed as p
 
 ## Goals
 - Add a new condition PodFailedToStartup to detect failures in configuration or setup
+
+## Potential Goals
 - Use this condition to force failure of Pods in Job Controller (Maybe?)
 
 ## Non Goals
 - Will not modify behavior for ImagePullBackOff
    - This status can be business as usual or image pull errors
    - Unclear if it is possible to detect this as a failure
+   - Invalid ImagePullSecrets are a common fail case but it is difficult to 
 
 ## Proposal
 
@@ -53,13 +58,55 @@ const (
 )
 ```
 
-We will target the pending cases above and set PodFailedToStartup to true.  
+For InvalidImageName, CreateContainerConfigError, we can create a condition for PodFailedToStart as true based on the container status.  For any case where reason is set, we can just match reason and generate a PodFailedToStart condition of true.
 
-- If [image-manager](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/images/image_manager.go#L107) detects that the image is invalid, we should set PodFailedToStartup to true.
-- If Reason is CreateContainerConfigError, then we should set PodFailedToStartup to true.
+We can add a new function in [kubelet/status/generate]https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/status/generate.go that returns true if status matches a fail case.  
 
 The more complicated issue is if we have volume issues (MountVolume.Setup) does not set a reason or status, so we will have to research what to do in this case.  
 
+## Community Questions
+[Image-Errors](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/images/types.go#L27)
+```
+	// ErrImageInspect - Unable to inspect image
+	ErrImageInspect = errors.New("ImageInspectError")
+
+	// ErrImagePull - General image pull error
+	ErrImagePull = errors.New("ErrImagePull")
+
+	// ErrImageNeverPull - Required Image is absent on host and PullPolicy is NeverPullImage
+	ErrImageNeverPull = errors.New("ErrImageNeverPull")
+
+	// ErrRegistryUnavailable - Get http error when pulling image from registry
+	ErrRegistryUnavailable = errors.New("RegistryUnavailable")
+
+	// ErrInvalidImageName - Unable to parse the image name.
+	ErrInvalidImageName = errors.New("InvalidImageName")
+```
+- Can the above errors be guaranteed to always fail?  Should we include 
+- What other pending cases should be targeted for Alpha?
+
+
+[kuberuntime_container errors](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L59)
+
+```
+var (
+	// ErrCreateContainerConfig - failed to create container config
+	ErrCreateContainerConfig = errors.New("CreateContainerConfigError")
+	// ErrPreCreateHook - failed to execute PreCreateHook
+	ErrPreCreateHook = errors.New("PreCreateHookError")
+	// ErrCreateContainer - failed to create container
+	ErrCreateContainer = errors.New("CreateContainerError")
+	// ErrPreStartHook - failed to execute PreStartHook
+	ErrPreStartHook = errors.New("PreStartHookError")
+	// ErrPostStartHook - failed to execute PostStartHook
+	ErrPostStartHook = errors.New("PostStartHookError")
+)
+```
+- If these are set, can we assume that container failed?  Not sure how to recreate failures of states other than ErrCreateContainerConfig
+
+UnableToSchedule
+
+- There are a lot of general scheduling issues that could cause Pods to be stuck in pending.  Can we assume that these won't go past Pending?  Is UnableToSchedule condition reliable enough to force ending a pod?
 
 
 ## Findings from Examples
@@ -111,7 +158,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=0/1
     - Status=InvalidImageName
     - Restarts=0
-- [no-exist](./Pods/NoExist/no-exist.yaml)
+- [no-exist](./Pods/No-Exist/no-exist.yaml)
   - Reproduction: Container with non existent image
   - Pod status:
     - status: Pending
@@ -145,6 +192,24 @@ In this section, we will demonstate how to reproduce certain pending conditions 
   - Get Table
     - Ready=0/1
     - Status=ImagePullBackOff
+- [image-never-pull-not-local](./Pods/Image-Never-Pull/image-never-pull.yaml)
+  - Reproduction: container with ImagePullPolicy: never but container doesn't exist locally
+  - Pod status:
+    - status: Pending
+  - ContainerStatus:
+    - state=Waiting
+    - message=container image "hello-world" is not present with pull policy of
+          Never
+    - reason=ErrImageNeverPull
+  - Conditions:
+    - Type=Status
+    - Initialized=True
+    - Ready=False
+    - ContainersReady=False
+    - PodScheduled=True
+  - Get Table
+    - Read=0/1
+    - Status=ErrImageNeverPull
 - [config-map-missing](./Pods/Config-Map-Missing/config-map-missing.yaml)
   - Reproduction: Container with missing config map
   - Pod status:
