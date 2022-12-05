@@ -10,11 +10,11 @@ We would like to propose a new condition so that out-of-tree controllers can det
 
 Batch users may not have deep knowledge of Kubernetes.  It is common occurence to find users submitting Pods with configuration errors (invalid images, wrong image names, missing volumes, missing secrets, wrong volume/secret for config map).  These cases cause the Pod to be stuck in pending and there is code required to remove these pods or user input to remove.
 
-As a batch system developer, we find that higher level controllers have to write code to handle Pending Pod cases.  Since the pods are not considered failed, the higher level controller needs to transition this state to failed in order to enforce retries.  For example, the job controller will run these pods and the state of the Pod will be in Pending.  The job controller does not transition this state to failed even if the pod will never.
+As a batch system developer, we find that higher level controllers have to write code to handle Pending Pod cases.  Since the pods are not considered failed, the higher level controller needs to transition this state to failed in order to enforce retries.  For example, the job controller will run these pods and the state of the Pod will be in Pending.  The job controller does not transition this state to failed even if the pod will never start running.
 
-For example, in the Armada project, we implement logic that determines retry ability based on events and statues.  Events are not standard so we expect issues when updating.  
+For CNCF projects, in the Armada project, we implement logic that determines retry ability based on events and statuses.  Events are not standard so we expect issues when updating and we discovered various states that don't have a representative status.  
 
-It would be ideal to have a standard condition/status for these common configuration errors.
+It would be ideal to have a standard condition for these common configuration errors.
 
 It would also be worth exploring if certain states can transition to failed as part of kubelet path.
 
@@ -60,7 +60,7 @@ const (
 
 For InvalidImageName, CreateContainerConfigError, we can create a condition for PodFailedToStart as true based on the container status.  For any case where reason is set, we can just match reason and generate a PodFailedToStart condition of true.
 
-We can add a new function in [kubelet/status/generate]https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/status/generate.go that returns true if status matches a fail case.  
+We can add a new function in [kubelet/status/generate](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/status/generate.go) that returns true if status matches a fail case.  
 
 The more complicated issue is if we have volume issues (MountVolume.Setup) does not set a reason or status, so we will have to research what to do in this case.  
 
@@ -82,7 +82,7 @@ The more complicated issue is if we have volume issues (MountVolume.Setup) does 
 	// ErrInvalidImageName - Unable to parse the image name.
 	ErrInvalidImageName = errors.New("InvalidImageName")
 ```
-- Can the above errors be guaranteed to always fail?  Should we include 
+- Can the above errors be guaranteed to always fail?
 - What other pending cases should be targeted for Alpha?
 
 
@@ -106,7 +106,9 @@ var (
 
 UnableToSchedule
 
-- There are a lot of general scheduling issues that could cause Pods to be stuck in pending.  Can we assume that these won't go past Pending?  Is UnableToSchedule condition reliable enough to force ending a pod?
+- There are a lot of general scheduling issues that could cause Pods to be stuck in pending.  
+- Can we assume that these won't go past Pending?  
+- Is UnableToSchedule condition reliable enough to force ending a pod?
 
 
 ## Findings from Examples
