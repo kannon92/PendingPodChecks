@@ -19,7 +19,7 @@ It would be ideal to have a standard condition for these common configuration er
 It would also be worth exploring if certain states can transition to failed as part of kubelet path.
 
 ## Goals
-- Add a new condition PodFailedToStartup to detect failures in configuration or setup
+- Add a new condition PodFailedToStartup to detect failures in configuration.
 
 ## Potential Goals
 - Use this condition to force failure of Pods in Job Controller (Maybe?)
@@ -35,14 +35,10 @@ It would also be worth exploring if certain states can transition to failed as p
 Add a PodFailedToStartup Condition for the following cases:
 
 - Invalid Image Name
+- Image not found locally when ImagePullPolicy is set to never.
 - Invalid Config Map
 - Invalid Mounting Volumes from secrets or config-maps
-- Unable to Schedule (missing Volume)
-  - Condition is unable to schedule
-  - Fails in scheduling stage.
-- NEED TO FIND MORE OPTIONS
 
-The following cases are failures and the pod will stay in pending forever.  
 
 ## Design Plan
 Add a PodFailedToStartup condition in core/v1:
@@ -58,11 +54,11 @@ const (
 )
 ```
 
-For InvalidImageName, CreateContainerConfigError, we can create a condition for PodFailedToStart as true based on the container status.  For any case where reason is set, we can just match reason and generate a PodFailedToStart condition of true.
+For errors that have a reason, we can create a condition for PodFailedToStart as true based on the container status.  For any case where reason is set, we can just match reason and generate a PodFailedToStart condition of true.
 
 We can add a new function in [kubelet/status/generate](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/status/generate.go) that returns true if status matches a fail case.  
 
-The more complicated issue is if we have volume issues (MountVolume.Setup) does not set a reason or status, so we will have to research what to do in this case.  
+The more complicated issue is if we have volume issues (MountVolume.Setup) does not set a reason or status, so we will have to research what to do in this case.  This KEP will include setting a new status for volume mount errors. Need input from sig-storage.  
 
 ## Community Questions
 [Image-Errors](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/images/types.go#L27)
