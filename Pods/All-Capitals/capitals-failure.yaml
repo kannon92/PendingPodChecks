@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: capitals-failure
+spec:
+  completions: 1
+  backoffLimit: 1
+  podFailurePolicy:
+    rules:
+    - action: FailJob
+      onPodConditions:
+      - type: FailedToStart
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: capitals-failure
+          image: "BUSYBOX"
+          command: ["sleep", "300"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "2000M"

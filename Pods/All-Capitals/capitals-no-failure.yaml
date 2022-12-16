@@ -1,18 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: all-capitals
+  name: capitals-no-failure
 spec:
   completions: 1
   backoffLimit: 1
   template:
     metadata:
-      labels:
-        app: sleep
+      name: capitals-no-failure
     spec:
       restartPolicy: Never
       containers:
-        - name: sleep300
+        - name: capitals-no-failure
           image: "BUSYBOX"
           command: ["sleep", "300"]
           resources:

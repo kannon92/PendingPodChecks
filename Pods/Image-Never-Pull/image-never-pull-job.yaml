@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: image-never-pull-job-policy
+spec:
+  completions: 1
+  backoffLimit: 1
+  podFailurePolicy:
+    rules:
+    - action: FailJob
+      onPodConditions:
+      - type: FailedToStart
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - command:
+          - sleep
+          - "3600"
+        image: hello-world
+        name: donotexist
+        imagePullPolicy: Never

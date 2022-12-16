@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-with-no-volume-no-failure-policy
+spec:
+  completions: 1
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pvc-container
+        image: nginx:latest
+        volumeMounts:
+        - mountPath: /pv-mount
+          name: pv
+      volumes:
+      - name: pv
+        persistentVolumeClaim:
+          claimName: example-pvc

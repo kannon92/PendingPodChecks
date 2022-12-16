@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: image-never-pull-no-job-policy
+spec:
+  completions: 1
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - command:
+          - sleep
+          - "3600"
+        image: hello-world
+        name: donotexist
+        imagePullPolicy: Never
