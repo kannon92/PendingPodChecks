@@ -282,7 +282,7 @@ A recent condition was added (PodReadyToStartContainers(PodHasNetwork as it was 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
-    - PodReadyToStartContainers=True
+    - PodReadyToStartContainers=False
   - Get Table
     - Ready=0/1
     - Status=ContainerCreating
@@ -302,7 +302,7 @@ A recent condition was added (PodReadyToStartContainers(PodHasNetwork as it was 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
-    - PodReadyToStartContainers=True
+    - PodReadyToStartContainers=False
   - Get Table
     - Ready=0/1
     - Status=ContainerCreating
