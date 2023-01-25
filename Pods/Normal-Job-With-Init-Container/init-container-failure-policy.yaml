@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-container-failure
+spec:
+  podFailurePolicy:
+    rules:
+    - action: FailJob
+      onPodConditions:
+      - type: PodHasNetwork
+        status: "False"
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: capital-init
+          image: busybox
+          command: ["exit", "1"]
+      containers:
+        - name: capitals-failure
+          image: "busybox"
+          command: ["sleep", "300"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "2000M"

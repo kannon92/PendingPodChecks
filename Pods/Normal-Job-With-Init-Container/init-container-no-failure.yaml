@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-container-failure
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: capital-init
+          image: busybox
+          command: ["sleep", "100"]
+      containers:
+        - name: capitals-failure
+          image: "busybox"
+          command: ["sleep", "300"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "2000M"

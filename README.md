@@ -129,6 +129,7 @@ See [Examples](#examples) for more details.
   - Status is ContainerCreating
   - Event says "MountVolume.SetUp failed for volume ..."
   - [MountVolume.SetUp](https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/util/operationexecutor/operation_generator.go#L530)
+  - PodReadyToStartContainers actually covers these cases.  The condition is false if container fails to create.
 - Unable to Schedule (missing Volume)
   - Condition is unable to schedule
   - Fails in scheduling stage.
@@ -136,6 +137,8 @@ See [Examples](#examples) for more details.
 
 ## Examples
 In this section, we will demonstate how to reproduce certain pending conditions and write out the conditions, status and events if necessary.
+
+A recent condition was added (PodReadyToStartContainers(PodHasNetwork as it was formally known)) 
 - [all-capitals](./Pods/All-Capitals/all-capitals.yaml)
   - Reproduction: Run image with invalid image name (all capitals)
   - Pod status:
@@ -152,6 +155,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table (`kubectl get pods`)
     - Ready=0/1
     - Status=InvalidImageName
@@ -170,6 +174,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=ImagePullBackOff
@@ -187,6 +192,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=ImagePullBackOff
@@ -205,6 +211,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Read=0/1
     - Status=ErrImageNeverPull
@@ -222,6 +229,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=CreateContainerConfigError
@@ -239,6 +247,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=CreateContainerConfigError
@@ -273,6 +282,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=ContainerCreating
@@ -292,6 +302,7 @@ In this section, we will demonstate how to reproduce certain pending conditions 
     - Ready=False
     - ContainersReady=False
     - PodScheduled=True
+    - PodReadyToStartContainers=True
   - Get Table
     - Ready=0/1
     - Status=ContainerCreating
